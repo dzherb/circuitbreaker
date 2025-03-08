@@ -4,7 +4,6 @@ from functools import wraps
 from inspect import isgeneratorfunction, isasyncgenfunction, isclass
 from math import ceil, floor
 from time import monotonic
-from typing import AnyStr, Iterable
 
 STRING_TYPES = (bytes, str)
 STATE_CLOSED = 'closed'
@@ -280,7 +279,7 @@ class CircuitBreaker(object):
     def fallback_function(self):
         return self._fallback_function
 
-    def __str__(self, *args, **kwargs):
+    def __str__(self):
         return self._name
 
 
@@ -292,10 +291,10 @@ class CircuitBreakerError(Exception):
         :param kwargs:
         :return:
         """
-        super(CircuitBreakerError, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._circuit_breaker = circuit_breaker
 
-    def __str__(self, *args, **kwargs):
+    def __str__(self):
         return 'Circuit "%s" OPEN until %s (%d failures, %d sec remaining) (last_failure: %r)' % (
             self._circuit_breaker.name,
             self._circuit_breaker.open_until,
@@ -317,21 +316,21 @@ class CircuitBreakerMonitor(object):
         return len(list(cls.get_open())) == 0
 
     @classmethod
-    def get_circuits(cls) -> Iterable[CircuitBreaker]:
+    def get_circuits(cls):
         return cls.circuit_breakers.values()
 
     @classmethod
-    def get(cls, name: AnyStr) -> CircuitBreaker:
+    def get(cls, name):
         return cls.circuit_breakers.get(name)
 
     @classmethod
-    def get_open(cls) -> Iterable[CircuitBreaker]:
+    def get_open(cls):
         for circuit in cls.get_circuits():
             if circuit.opened:
                 yield circuit
 
     @classmethod
-    def get_closed(cls) -> Iterable[CircuitBreaker]:
+    def get_closed(cls):
         for circuit in cls.get_circuits():
             if circuit.closed:
                 yield circuit
